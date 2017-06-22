@@ -1,5 +1,10 @@
 package rb;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.File;
+import java.io.IOException;
+
 class RBT {
 	public Node root;
 
@@ -205,6 +210,12 @@ class RBT {
 			n = n.left;
 		return n;
 	}
+	
+	Node Tree_maximum(Node n) {
+		while (n.right.val != 0)
+			n = n.right;
+		return n;
+	}
 
 	public void RBT_Trans(Node u, Node v) {
 		if(u.p.val == 0)
@@ -232,8 +243,12 @@ class RBT {
 			return;
 		else {
 			inorder(tree.left);
-			System.out.println(tree.val);
-			inorder(tree.right);
+			System.out.print(tree.val);
+		      if(tree.color)
+		    	  System.out.println(" R");
+		      else
+		    	  System.out.println(" B");
+		      inorder(tree.right);
 		}
 	}
 
@@ -255,5 +270,101 @@ class RBT {
 			return BlackHeight(tree.left) + 1;
 		else
 			return BlackHeight(tree.left);
+	}
+	
+	Node Successor(Node x) {
+		if (x.right.val != 0)
+			return Tree_minimum(x.right);
+		Node y = x.p;
+		while (y.val != 0 && x == y.right) {
+			x = y;
+			y = y.p;
+		}
+		return y;
+	}
+	
+	Node Predecessor(Node x) {
+		if (x.left.val != 0)
+			return Tree_maximum(x.left);
+		Node y = x.p;
+		while (y.val != 0 && x == y.left) {
+			x = y;
+			y = y.p;
+		}
+		return y;
+	}
+	
+	public Node NodeSearch(Node tree, int key) {
+		Node x = null;
+		while (tree.val != 0) {
+			x = tree;
+			if(key == tree.val)
+				return tree;
+			else if (key < tree.val)
+				tree = tree.left;
+			else
+				tree = tree.right;
+		}
+		return x;
+	}
+	
+	public void PrintFinalProj(int key) throws IOException {
+		Node mid;
+		Node pre;
+		Node rear;
+		Node pre_node = NodeSearch(root, key - 1);
+		Node rear_node = NodeSearch(root, key + 1);
+		BufferedWriter fw = new BufferedWriter(new FileWriter("output.txt", true));
+		
+		mid = tree_search(root, key);
+		if (pre_node.val < key)
+			pre = pre_node;
+		else if (root.val < pre_node.val)
+			pre = root;
+		else
+			pre = null;
+		
+		if (rear_node.val > key)
+			rear = rear_node;
+		else if (root.val > rear_node.val)
+			rear = root;
+		else
+			rear = null;
+		
+		
+		if (pre == null || pre.val == 0) {
+			System.out.print("NIL    ");
+			fw.write("NIL    ");
+			fw.flush();
+		}
+		else {
+			System.out.print(pre.val + " ");
+			fw.write(pre.val + " ");
+			fw.flush();
+		}
+		
+		if (mid == null || mid.val == 0) {
+			System.out.print("NIL    ");
+			fw.write("NIL    ");
+			fw.flush();
+		}
+		else {
+			System.out.print(mid.val + " ");
+			fw.write(mid.val + " ");
+			fw.flush();
+		}
+		
+		if (rear == null || rear.val == 0) {
+			System.out.println("NIL");
+			fw.write("NIL"); fw.newLine();
+			fw.flush();
+		}
+		else {
+			System.out.println(rear.val + " ");
+			fw.write(rear.val + " "); fw.newLine();
+			fw.flush();
+		}
+		
+		fw.close();
 	}
 }
